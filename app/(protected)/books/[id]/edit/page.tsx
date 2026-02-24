@@ -5,9 +5,9 @@ import { getBookById } from "@/lib/services/bookService";
 import { BookForm } from "@/components/books/BookForm";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function EditBookPage({ params }: PageParams) {
@@ -18,7 +18,8 @@ export default async function EditBookPage({ params }: PageParams) {
     redirect("/books");
   }
 
-  const book = await getBookById(params.id);
+  const { id } = await params;
+  const book = await getBookById(id);
   if (!book) {
     redirect("/books");
   }

@@ -6,11 +6,11 @@ import { BookTable } from "@/components/books/BookTable";
 import { canManageBooks } from "@/lib/authz";
 
 type PageProps = {
-  searchParams: {
+  searchParams: Promise<{
     query?: string;
     status?: string;
     page?: string;
-  };
+  }>;
 };
 
 export default async function BooksPage({ searchParams }: PageProps) {
@@ -18,12 +18,13 @@ export default async function BooksPage({ searchParams }: PageProps) {
   const role = (session?.user as any)?.role;
   const canManage = canManageBooks(role);
 
-  const page = Number(searchParams.page ?? "1") || 1;
+  const params = await searchParams;
+  const page = Number(params.page ?? "1") || 1;
 
   const { items: books } = await listBooks(
     {
-      query: searchParams.query,
-      status: (searchParams.status as any) ?? "ALL",
+      query: params.query,
+      status: (params.status as any) ?? "ALL",
     },
     page
   );

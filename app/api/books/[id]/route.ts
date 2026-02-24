@@ -10,13 +10,14 @@ import {
 } from "@/lib/services/bookService";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const book = await getBookById(params.id);
+  const { id } = await params;
+  const book = await getBookById(id);
   if (!book) {
     return new NextResponse("Not found", { status: 404 });
   }
@@ -31,6 +32,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
+  const { id } = await params;
   const payload = await request.json();
 
   if (!payload.title || !payload.author) {
@@ -38,7 +40,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 
   const book = await updateBook(
-    params.id,
+    id,
     {
       title: payload.title,
       author: payload.author,
@@ -64,7 +66,8 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
-  await hardDeleteBook(params.id, (session.user as any).id);
+  const { id } = await params;
+  await hardDeleteBook(id, (session.user as any).id);
   return new NextResponse(null, { status: 204 });
 }
 
@@ -76,16 +79,17 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return new NextResponse("Forbidden", { status: 403 });
   }
 
+  const { id } = await params;
   const payload = await request.json();
   const userId = (session.user as any).id;
 
   if (payload.action === "archive") {
-    const book = await archiveBook(params.id, userId);
+    const book = await archiveBook(id, userId);
     return NextResponse.json(book);
   }
 
   if (payload.action === "unarchive") {
-    const book = await unarchiveBook(params.id, userId);
+    const book = await unarchiveBook(id, userId);
     return NextResponse.json(book);
   }
 

@@ -3,9 +3,9 @@ import { auth } from "@/lib/auth";
 import { checkoutBook, returnBook } from "@/lib/services/loanService";
 
 type RouteParams = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function POST(request: Request, { params }: RouteParams) {
@@ -14,17 +14,18 @@ export async function POST(request: Request, { params }: RouteParams) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
+  const { id } = await params;
   const payload = await request.json();
   const action = payload.action as "checkout" | "return" | undefined;
 
   try {
     if (action === "checkout") {
-      const loan = await checkoutBook(params.id, (session.user as any).id);
+      const loan = await checkoutBook(id, (session.user as any).id);
       return NextResponse.json(loan);
     }
 
     if (action === "return") {
-      const loan = await returnBook(params.id, (session.user as any).id);
+      const loan = await returnBook(id, (session.user as any).id);
       return NextResponse.json(loan);
     }
 
