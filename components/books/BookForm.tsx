@@ -21,7 +21,42 @@ export function BookForm({ mode, initial }: BookFormProps) {
   );
   const [description, setDescription] = useState(initial?.description ?? "");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const generateDescription = async () => {
+    if (!title || !author) {
+      setError("Title and author are required to generate description");
+      return;
+    }
+
+    setAiLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          author,
+          category: category || undefined,
+          year: publishedYear ? Number(publishedYear) : undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to generate description");
+      }
+
+      const data = await res.json();
+      setDescription(data.description);
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+      else setError("Failed to generate description");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,12 +150,22 @@ export function BookForm({ mode, initial }: BookFormProps) {
         </Field>
       </div>
       <Field label="Description">
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-          className="w-full rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
-        />
+        <div className="space-y-2">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            className="w-full rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-xs dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
+          />
+          <button
+            type="button"
+            onClick={generateDescription}
+            disabled={aiLoading || !title || !author}
+            className="text-xs text-blue-600 hover:text-blue-700 disabled:text-zinc-400 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            {aiLoading ? "✨ Generating..." : "✨ Generate with AI"}
+          </button>
+        </div>
       </Field>
       {error && (
         <p className="text-xs text-red-600 dark:text-red-400">{error}</p>

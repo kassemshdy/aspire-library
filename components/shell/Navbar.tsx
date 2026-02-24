@@ -17,6 +17,10 @@ export function Navbar() {
         <nav className="flex items-center gap-3 text-xs">
           <a href="/dashboard" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">Dashboard</a>
           <a href="/books" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">Books</a>
+          <a href="/loans" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">Loans</a>
+          {user?.role === "ADMIN" && (
+            <a href="/audit" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">Audit</a>
+          )}
         </nav>
         {user?.role && (
           <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
