@@ -36,7 +36,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   const { id } = await params;
 
   try {
-    const loan = await returnBook(id, session.user.id);
+    const loan = await returnBook(id, session.user.id, session.user.role);
     return NextResponse.json(loan);
   } catch (error) {
     if (error instanceof Error) {

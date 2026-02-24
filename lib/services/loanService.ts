@@ -47,7 +47,7 @@ export async function checkoutBook(bookId: string, userId: string) {
   return loan;
 }
 
-export async function returnBook(bookId: string, userId: string) {
+export async function returnBook(bookId: string, userId: string, userRole?: string) {
   const book = await prisma.book.findUnique({ where: { id: bookId } });
   if (!book) {
     throw new Error("Book not found");
@@ -66,6 +66,14 @@ export async function returnBook(bookId: string, userId: string) {
 
   if (!openLoan) {
     throw new Error("No active loan found for this book");
+  }
+
+  // Authorization check: Only allow if user is admin/librarian OR the book's borrower
+  const isAdminOrLibrarian = userRole === "ADMIN" || userRole === "LIBRARIAN";
+  const isBookOwner = openLoan.userId === userId;
+
+  if (!isAdminOrLibrarian && !isBookOwner) {
+    throw new Error("Unauthorized: You can only return books you checked out");
   }
 
   const now = new Date();
