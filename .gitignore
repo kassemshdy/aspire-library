@@ -30,6 +30,27 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# local npm cache used by tooling
+.npm-cache/
+
+# prisma & database tooling
+prisma/dev.db
+prisma/dev.sqlite
+prisma/dev-data/
+
+# docker
+docker-data/
+docker-compose.override.yml
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# cursor / editor metadata
+.cursor/
+
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -39,3 +60,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
