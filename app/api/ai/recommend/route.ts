@@ -38,7 +38,11 @@ export async function POST(request: Request) {
     const recommendations = await recommendSimilarBooks(
       book.title,
       book.author,
-      allBooks
+      allBooks.map(b => ({
+        title: b.title,
+        author: b.author,
+        category: b.category ?? undefined,
+      }))
     );
 
     // Find the actual book IDs for the recommendations

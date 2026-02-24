@@ -1,4 +1,4 @@
-import type { NextAuthConfig } from "next-auth";
+import type { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import type { Role } from "@prisma/client";
@@ -8,8 +8,8 @@ import { prisma } from "./prisma";
 const adminEmails =
   process.env.ADMIN_EMAILS?.split(",").map((e) => e.trim().toLowerCase()) ?? [];
 
-export const authConfig: NextAuthConfig = {
-  adapter: PrismaAdapter(prisma),
+export const authConfig: AuthOptions = {
+  adapter: PrismaAdapter(prisma) as any,
   pages: {
     signIn: "/auth/signin",
   },
@@ -36,7 +36,7 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user, trigger }) {
       // On first JWT callback after sign-in, persist role & id on token
       if (user) {
-        token.id = (user as any).id;
+        token.id = user.id;
 
         // Check if user should be admin
         const email = user.email?.toLowerCase();
@@ -58,7 +58,7 @@ export const authConfig: NextAuthConfig = {
             token.role = "MEMBER";
           }
         } else {
-          token.role = (user as any).role ?? "MEMBER";
+          token.role = user.role ?? "MEMBER";
         }
       }
 
@@ -71,8 +71,8 @@ export const authConfig: NextAuthConfig = {
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = (token.role as Role) ?? "MEMBER";
+        session.user.id = token.id as string;
+        session.user.role = (token.role as Role) ?? "MEMBER";
       }
       return session;
     },

@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   if (!session?.user || !canManageBooks(role)) {
     return new NextResponse("Forbidden", { status: 403 });

@@ -26,7 +26,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
 export async function PUT(request: Request, { params }: RouteParams) {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   if (!session?.user || !canManageBooks(role)) {
     return new NextResponse("Forbidden", { status: 403 });
@@ -60,7 +60,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
 
 export async function DELETE(_request: Request, { params }: RouteParams) {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   if (!session?.user || !canManageBooks(role)) {
     return new NextResponse("Forbidden", { status: 403 });
@@ -73,7 +73,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
 
   if (!session?.user || !canManageBooks(role)) {
     return new NextResponse("Forbidden", { status: 403 });

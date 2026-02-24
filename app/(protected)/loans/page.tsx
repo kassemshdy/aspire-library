@@ -4,7 +4,7 @@ import { Navbar } from "@/components/shell/Navbar";
 
 export default async function LoansPage() {
   const session = await auth();
-  const userRole = (session?.user as any)?.role;
+  const userRole = session?.user?.role;
   const userId = (session?.user as any)?.id;
 
   // Show all loans for ADMIN/LIBRARIAN, only user's loans for MEMBER

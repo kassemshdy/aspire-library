@@ -4,6 +4,7 @@ import { listBooks } from "@/lib/services/bookService";
 import { BookFilters } from "@/components/books/BookFilters";
 import { BookTable } from "@/components/books/BookTable";
 import { canManageBooks } from "@/lib/authz";
+import { Navbar } from "@/components/shell/Navbar";
 
 type PageProps = {
   searchParams: Promise<{
@@ -15,7 +16,7 @@ type PageProps = {
 
 export default async function BooksPage({ searchParams }: PageProps) {
   const session = await auth();
-  const role = (session?.user as any)?.role;
+  const role = session?.user?.role;
   const canManage = canManageBooks(role);
 
   const params = await searchParams;
@@ -31,6 +32,7 @@ export default async function BooksPage({ searchParams }: PageProps) {
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-zinc-950">
+      <Navbar />
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-6 py-6">
         <div className="flex items-center justify-between gap-2">
           <div>

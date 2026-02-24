@@ -4,7 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { BookStatus } from "@prisma/client";
 import { useTransition, useState, useEffect } from "react";
 
-const STATUS_OPTIONS: ({ label: string | JSX.Element; value: BookStatus | "ALL" })[] = [
+const STATUS_OPTIONS: { label: string; value: BookStatus | "ALL" }[] = [
   { label: "All", value: "ALL" },
   { label: "Available", value: "AVAILABLE" },
   { label: "Checked out", value: "CHECKED_OUT" },

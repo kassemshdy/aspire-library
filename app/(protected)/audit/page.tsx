@@ -5,7 +5,7 @@ import { Navbar } from "@/components/shell/Navbar";
 
 export default async function AuditLogsPage() {
   const session = await auth();
-  const userRole = (session?.user as any)?.role;
+  const userRole = session?.user?.role;
 
   // Only ADMIN can view audit logs
   if (userRole !== "ADMIN") {
