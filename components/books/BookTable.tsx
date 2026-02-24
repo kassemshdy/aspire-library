@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Book } from "@prisma/client";
 import { BookStatusBadge } from "./BookStatusBadge";
+import { LoanButton } from "./LoanButton";
 
 export function BookTable({ books }: { books: Book[] }) {
   if (books.length === 0) {
@@ -43,12 +44,19 @@ export function BookTable({ books }: { books: Book[] }) {
                 {book.publishedYear ?? "—"}
               </td>
               <td className="px-4 py-2 align-middle text-right text-xs">
-                <Link
-                  href={`/books/${book.id}/edit`}
-                  className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                >
-                  Edit
-                </Link>
+                <div className="flex items-center justify-end gap-2">
+                  <LoanButton
+                    bookId={book.id}
+                    bookTitle={book.title}
+                    status={book.status}
+                  />
+                  <Link
+                    href={`/books/${book.id}/edit`}
+                    className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  >
+                    Edit
+                  </Link>
+                </div>
               </td>
             </tr>
           ))}
