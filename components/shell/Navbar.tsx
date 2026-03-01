@@ -3,6 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { RoleSwitcher } from "@/components/auth/RoleSwitcher";
 
 export function Navbar() {
   const { data } = useSession();
@@ -45,9 +46,12 @@ export function Navbar() {
         {/* User Info and Actions */}
         <div className="flex items-center gap-3">
           {user?.role && (
-            <span className="hidden rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 sm:inline-block">
-              {user.role}
-            </span>
+            <>
+              <RoleSwitcher currentRole={user.role} />
+              <span className="hidden rounded-full bg-gradient-to-r from-blue-500/10 to-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400 sm:inline-block">
+                {user.role}
+              </span>
+            </>
           )}
 
           {user?.email && (
