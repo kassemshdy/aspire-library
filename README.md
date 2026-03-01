@@ -24,6 +24,44 @@ https://aspire-library-production.up.railway.app
 - **User Management** - Auto-elevation of admin users via email whitelist
 - **Loan History** - Complete borrowing history with status tracking
 
+## 🔐 Role-Based Permissions
+
+The system implements three distinct user roles with different permission levels:
+
+| Feature | MEMBER | LIBRARIAN | ADMIN |
+|---------|:------:|:---------:|:-----:|
+| **Books** |
+| View books | ✅ | ✅ | ✅ |
+| Search & filter books | ✅ | ✅ | ✅ |
+| Check out available books | ✅ | ✅ | ✅ |
+| Return own books | ✅ | ✅ | ✅ |
+| Return any book | ❌ | ✅ | ✅ |
+| Create new books | ❌ | ✅ | ✅ |
+| Edit books | ❌ | ✅ | ✅ |
+| Delete/Archive books | ❌ | ✅ | ✅ |
+| **Administrative** |
+| View own loan history | ✅ | ✅ | ✅ |
+| View all loans | ❌ | ✅ | ✅ |
+| Access audit logs | ❌ | ❌ | ✅ |
+| **AI Features** |
+| AI-powered search | ✅ | ✅ | ✅ |
+| Book recommendations | ✅ | ✅ | ✅ |
+| Generate descriptions | ❌ | ✅ | ✅ |
+
+### Role Assignment
+
+- **First user** from `ADMIN_EMAILS` environment variable automatically becomes ADMIN
+- **Default role** for new users is MEMBER
+- **Role elevation** must be done by modifying the database directly or updating `ADMIN_EMAILS`
+
+### Security Features
+
+- ✅ Server-side authorization checks on all API routes
+- ✅ Client-side UI element hiding based on permissions
+- ✅ Protected page redirects for unauthorized access
+- ✅ Loan ownership validation (users can only return their own books unless ADMIN/LIBRARIAN)
+- ✅ Audit trail for all administrative actions
+
 ## 🛠️ Tech Stack
 
 - **Framework**: Next.js 16 (App Router, TypeScript)
