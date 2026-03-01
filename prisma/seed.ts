@@ -106,14 +106,33 @@ async function main() {
   // Check if database already has data
   const existingBooks = await prisma.book.count();
 
-  if (existingBooks > 0) {
+  // Allow force seeding via environment variable
+  const forceSeed = process.env.FORCE_SEED === "true";
+
+  if (existingBooks > 0 && !forceSeed) {
     console.log("📚 Database already has data. Skipping seed.");
     console.log(`   Found ${existingBooks} existing books.`);
-    console.log("\n💡 To re-seed, manually delete data first or run: npx prisma migrate reset");
+    console.log("\n💡 To force seed, set FORCE_SEED=true environment variable");
+    console.log("💡 Or manually delete data first: npx prisma migrate reset");
     return;
   }
 
-  console.log("🌱 Database is empty. Starting seed...");
+  if (existingBooks > 0 && forceSeed) {
+    console.log("🗑️  FORCE_SEED=true - Clearing existing data...");
+
+    // Delete in correct order due to foreign key constraints
+    await prisma.auditLog.deleteMany();
+    await prisma.loan.deleteMany();
+    await prisma.book.deleteMany();
+    await prisma.session.deleteMany();
+    await prisma.account.deleteMany();
+    await prisma.user.deleteMany();
+
+    console.log("✅ Database cleared!");
+  } else {
+    console.log("🌱 Database is empty. Starting seed...");
+  }
+
   console.log("\n📚 Creating library data...\n");
 
   // Create users
