@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Book } from "@prisma/client";
 import { BookStatusBadge } from "./BookStatusBadge";
 import { LoanButton } from "./LoanButton";
+import { BookRecommendations } from "./BookRecommendations";
 
 export function BookTable({ books }: { books: Book[] }) {
   if (books.length === 0) {
@@ -49,6 +50,10 @@ export function BookTable({ books }: { books: Book[] }) {
                     bookId={book.id}
                     bookTitle={book.title}
                     status={book.status}
+                  />
+                  <BookRecommendations
+                    bookId={book.id}
+                    bookTitle={book.title}
                   />
                   <Link
                     href={`/books/${book.id}/edit`}

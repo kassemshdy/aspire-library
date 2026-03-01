@@ -141,3 +141,66 @@ Return ONLY a JSON array of book titles, e.g.: ["Title 1", "Title 2", "Title 3"]
     return [];
   }
 }
+
+export type BookSuggestion = {
+  title: string;
+  author: string;
+  category?: string;
+  publishedYear?: number;
+  description: string;
+};
+
+export async function discoverNewBooks(
+  query: string
+): Promise<BookSuggestion[]> {
+  checkAiAvailable();
+
+  const currentYear = new Date().getFullYear();
+  const prompt = `You are a library acquisition assistant. Based on this request: "${query}"
+
+Suggest 3-5 real, recently published books (from ${currentYear - 2} to ${currentYear}) that would be great additions to a library.
+
+For each book, provide:
+- Title (exact title)
+- Author (full name)
+- Category/Genre
+- Published Year
+- Brief description (1-2 sentences)
+
+Return ONLY valid JSON in this format:
+[
+  {
+    "title": "Book Title",
+    "author": "Author Name",
+    "category": "Genre",
+    "publishedYear": ${currentYear},
+    "description": "Brief description"
+  }
+]
+
+Focus on popular, well-reviewed books that libraries would want to acquire.`;
+
+  const message = await anthropic!.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1500,
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+  const textContent = message.content.find((c) => c.type === "text");
+  const response =
+    textContent && "text" in textContent ? textContent.text : "[]";
+
+  try {
+    // Extract JSON from response (might be wrapped in markdown code blocks)
+    const jsonMatch = response.match(/\[[\s\S]*\]/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : response;
+    return JSON.parse(jsonStr);
+  } catch {
+    return [];
+  }
+}
