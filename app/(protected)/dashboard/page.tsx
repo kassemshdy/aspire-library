@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookDiscovery } from "@/components/books/BookDiscovery";
+import { PurchaseRecommendations } from "@/components/books/PurchaseRecommendations";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -105,10 +106,11 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {/* AI Book Discovery - Only for Librarians and Admins */}
+        {/* AI Features - Only for Librarians and Admins */}
         {canManageBooks && (
-          <div className="mb-8">
+          <div className="mb-8 grid gap-6 lg:grid-cols-2">
             <BookDiscovery />
+            <PurchaseRecommendations />
           </div>
         )}
 
