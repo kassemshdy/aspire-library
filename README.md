@@ -309,10 +309,13 @@ aspire-library/
    railway up
    \`\`\`
 
-6. **Run Migrations**
-   \`\`\`bash
-   railway run npx prisma migrate deploy
-   \`\`\`
+6. **Migrations and Seed Data**
+
+   The deployment automatically runs:
+   - Database migrations (`npx prisma migrate deploy`)
+   - Seed data (70+ books, sample users, loan history) - **runs only once if database is empty**
+
+   No manual intervention needed! The app will be pre-populated with demo data on first deployment.
 
 ## 🧪 Development
 

@@ -103,17 +103,17 @@ const BOOKS_DATA = [
 ];
 
 async function main() {
-  console.log("🗑️  Clearing existing data...");
+  // Check if database already has data
+  const existingBooks = await prisma.book.count();
 
-  // Delete in correct order due to foreign key constraints
-  await prisma.auditLog.deleteMany();
-  await prisma.loan.deleteMany();
-  await prisma.book.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.account.deleteMany();
-  await prisma.user.deleteMany();
+  if (existingBooks > 0) {
+    console.log("📚 Database already has data. Skipping seed.");
+    console.log(`   Found ${existingBooks} existing books.`);
+    console.log("\n💡 To re-seed, manually delete data first or run: npx prisma migrate reset");
+    return;
+  }
 
-  console.log("✅ Database cleared!");
+  console.log("🌱 Database is empty. Starting seed...");
   console.log("\n📚 Creating library data...\n");
 
   // Create users
