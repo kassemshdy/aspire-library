@@ -42,7 +42,6 @@ The demo is pre-populated with 70+ books and realistic loan data to showcase the
 - **Smart Search** - Natural language queries powered by Claude AI
 - **Auto-Generated Descriptions** - AI-generated book descriptions
 - **Book Recommendations** - Intelligent book recommendations based on similarity
-- **Book Discovery** - AI-powered search for new books to add to the library
 - **Purchase Recommendations** - Data-driven suggestions for books to buy based on loan patterns
 
 ### Administrative Features
@@ -74,7 +73,6 @@ The system implements three distinct user roles with different permission levels
 | AI-powered search | ✅ | ✅ | ✅ |
 | Book recommendations | ✅ | ✅ | ✅ |
 | Generate descriptions | ❌ | ✅ | ✅ |
-| Book discovery | ❌ | ✅ | ✅ |
 | Purchase recommendations | ❌ | ✅ | ✅ |
 
 ### Role Assignment
@@ -228,12 +226,6 @@ Visit [http://localhost:3000](http://localhost:3000)
 1. On any book in the catalog, click "Similar" button
 2. View AI-generated recommendations of similar books
 3. Click "View" to navigate to recommended books
-
-**Book Discovery (Librarians/Admins only):**
-1. From dashboard, enter search query (e.g., "popular mystery 2024")
-2. Click "Discover" to get AI suggestions for new books
-3. Review AI-suggested books with descriptions
-4. Click "Add to Library" to instantly add books to catalog
 
 **Purchase Recommendations (Librarians/Admins only):**
 1. From dashboard, click "Get Purchase Recommendations"

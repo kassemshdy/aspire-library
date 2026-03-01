@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookDiscovery } from "@/components/books/BookDiscovery";
 import { PurchaseRecommendations } from "@/components/books/PurchaseRecommendations";
 
 export default async function DashboardPage() {
@@ -106,10 +105,9 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {/* AI Features - Only for Librarians and Admins */}
+        {/* AI Purchase Recommendations - Only for Librarians and Admins */}
         {canManageBooks && (
-          <div className="mb-8 grid gap-6 lg:grid-cols-2">
-            <BookDiscovery />
+          <div className="mb-8">
             <PurchaseRecommendations />
           </div>
         )}
