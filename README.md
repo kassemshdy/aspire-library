@@ -2,6 +2,9 @@
 
 A modern, full-stack library management web application built with Next.js 16, featuring Google OAuth authentication, AI-powered search and recommendations, and comprehensive loan tracking.
 
+## DEMO
+https://aspire-library-production.up.railway.app
+
 ## ✨ Features
 
 ### Core Functionality
