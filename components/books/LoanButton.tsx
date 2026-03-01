@@ -4,6 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { BookStatus } from "@prisma/client";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 interface LoanButtonProps {
   bookId: string;
@@ -14,11 +27,11 @@ interface LoanButtonProps {
 export function LoanButton({ bookId, bookTitle, status }: LoanButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleLoan = async () => {
-    if (!confirm(`Check out "${bookTitle}"?`)) return;
-
     setIsLoading(true);
+
     try {
       const res = await fetch(`/api/books/${bookId}/loan`, {
         method: "POST",
@@ -26,22 +39,22 @@ export function LoanButton({ bookId, bookTitle, status }: LoanButtonProps) {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Failed to check out book");
+        toast.error(data.error || "Failed to check out book");
         return;
       }
 
+      toast.success(`Successfully checked out "${bookTitle}"`);
       router.refresh();
     } catch (error) {
-      alert("Failed to check out book");
+      toast.error("Failed to check out book");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleReturn = async () => {
-    if (!confirm(`Return "${bookTitle}"?`)) return;
-
     setIsLoading(true);
+
     try {
       const res = await fetch(`/api/books/${bookId}/loan`, {
         method: "DELETE",
@@ -49,13 +62,15 @@ export function LoanButton({ bookId, bookTitle, status }: LoanButtonProps) {
 
       if (!res.ok) {
         const data = await res.json();
-        alert(data.error || "Failed to return book");
+        toast.error(data.error || "Failed to return book");
         return;
       }
 
+      toast.success(`Successfully returned "${bookTitle}"`);
+      setOpen(false);
       router.refresh();
     } catch (error) {
-      alert("Failed to return book");
+      toast.error("Failed to return book");
     } finally {
       setIsLoading(false);
     }
@@ -67,15 +82,35 @@ export function LoanButton({ bookId, bookTitle, status }: LoanButtonProps) {
 
   if (status === "CHECKED_OUT") {
     return (
-      <Button
-        onClick={handleReturn}
-        disabled={isLoading}
-        variant="outline"
-        size="sm"
-        className="text-xs"
-      >
-        {isLoading ? "Returning..." : "Return"}
-      </Button>
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogTrigger asChild>
+          <Button variant="outline" size="sm" className="text-xs">
+            Return
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Return book?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to return "{bookTitle}"? This book will be
+              marked as available for others to check out.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleReturn();
+              }}
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading ? "Returning..." : "Return Book"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     );
   }
 
@@ -86,6 +121,7 @@ export function LoanButton({ bookId, bookTitle, status }: LoanButtonProps) {
       size="sm"
       className="text-xs"
     >
+      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
       {isLoading ? "Checking out..." : "Check Out"}
     </Button>
   );
