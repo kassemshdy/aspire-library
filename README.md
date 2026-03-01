@@ -5,6 +5,31 @@ A modern, full-stack library management web application built with Next.js 16, f
 ## DEMO
 https://aspire-library-production.up.railway.app
 
+## 🎯 For Recruiters/Evaluators
+
+**To test ALL features (including admin/librarian features):**
+
+1. Visit the demo URL above
+2. Click "Sign in with Google"
+3. **The first user to sign in automatically becomes ADMIN** with full access
+4. You'll immediately see all features including:
+   - Book management (add, edit, delete)
+   - AI features (search, recommendations, book discovery, purchase suggestions)
+   - Loan management
+   - Audit logs
+   - All administrative functions
+
+**To test different user roles (MEMBER, LIBRARIAN, ADMIN):**
+
+Use the **Role Switcher** dropdown in the top navigation bar:
+- Select "Member" to see the member experience (browse, borrow, limited features)
+- Select "Librarian" to see librarian capabilities (manage books, all loans)
+- Select "Admin" to return to full admin access
+
+The page will refresh automatically when you switch roles.
+
+The demo is pre-populated with 70+ books and realistic loan data to showcase the full functionality.
+
 ## ✨ Features
 
 ### Core Functionality
@@ -16,13 +41,53 @@ https://aspire-library-production.up.railway.app
 ### AI-Powered Features
 - **Smart Search** - Natural language queries powered by Claude AI
 - **Auto-Generated Descriptions** - AI-generated book descriptions
-- **Recommendations** - Intelligent book recommendations based on similarity
+- **Book Recommendations** - Intelligent book recommendations based on similarity
+- **Purchase Recommendations** - Data-driven suggestions for books to buy based on loan patterns
 
 ### Administrative Features
 - **Audit Logging** - Complete activity tracking for all operations
 - **Soft Delete** - Archive books instead of permanent deletion
 - **User Management** - Auto-elevation of admin users via email whitelist
 - **Loan History** - Complete borrowing history with status tracking
+
+## 🔐 Role-Based Permissions
+
+The system implements three distinct user roles with different permission levels:
+
+| Feature | MEMBER | LIBRARIAN | ADMIN |
+|---------|:------:|:---------:|:-----:|
+| **Books** |
+| View books | ✅ | ✅ | ✅ |
+| Search & filter books | ✅ | ✅ | ✅ |
+| Check out available books | ✅ | ✅ | ✅ |
+| Return own books | ✅ | ✅ | ✅ |
+| Return any book | ❌ | ✅ | ✅ |
+| Create new books | ❌ | ✅ | ✅ |
+| Edit books | ❌ | ✅ | ✅ |
+| Delete/Archive books | ❌ | ✅ | ✅ |
+| **Administrative** |
+| View own loan history | ✅ | ✅ | ✅ |
+| View all loans | ❌ | ✅ | ✅ |
+| Access audit logs | ❌ | ❌ | ✅ |
+| **AI Features** |
+| AI-powered search | ✅ | ✅ | ✅ |
+| Book recommendations | ✅ | ✅ | ✅ |
+| Generate descriptions | ❌ | ✅ | ✅ |
+| Purchase recommendations | ❌ | ✅ | ✅ |
+
+### Role Assignment
+
+- **First user** from `ADMIN_EMAILS` environment variable automatically becomes ADMIN
+- **Default role** for new users is MEMBER
+- **Role elevation** must be done by modifying the database directly or updating `ADMIN_EMAILS`
+
+### Security Features
+
+- ✅ Server-side authorization checks on all API routes
+- ✅ Client-side UI element hiding based on permissions
+- ✅ Protected page redirects for unauthorized access
+- ✅ Loan ownership validation (users can only return their own books unless ADMIN/LIBRARIAN)
+- ✅ Audit trail for all administrative actions
 
 ## 🛠️ Tech Stack
 
@@ -149,6 +214,28 @@ Visit [http://localhost:3000](http://localhost:3000)
 3. Book becomes available again
 4. Transaction logged in history
 
+### AI-Powered Features
+
+**AI Search:**
+1. Navigate to "Books" page
+2. Enter natural language query (e.g., "science fiction from the 90s")
+3. Click "AI Search" button
+4. AI extracts structured parameters and applies them to search
+
+**Book Recommendations:**
+1. On any book in the catalog, click "Similar" button
+2. View AI-generated recommendations of similar books
+3. Click "View" to navigate to recommended books
+
+**Purchase Recommendations (Librarians/Admins only):**
+1. From dashboard, click "Get Purchase Recommendations"
+2. AI analyzes loan patterns and most borrowed books
+3. Receive 5 data-driven book purchase suggestions
+4. Each includes reasoning based on borrowing trends
+5. Click "Amazon" to search and purchase recommended books
+
+The AI Purchase Recommendations feature analyzes your library's loan history to suggest new books to acquire from Amazon. By examining borrowing patterns, popular categories, and the most frequently checked-out titles, Claude AI generates data-driven recommendations for 5 books that match proven patron interests. Each recommendation includes the book's details, a description, and most importantly, an explanation of why it fits your library's specific borrowing trends. This transforms book acquisition from guesswork into an evidence-based process, helping librarians invest their budgets in titles that are likely to circulate well.
+
 ## 🎨 Project Structure
 
 \`\`\`
@@ -222,10 +309,13 @@ aspire-library/
    railway up
    \`\`\`
 
-6. **Run Migrations**
-   \`\`\`bash
-   railway run npx prisma migrate deploy
-   \`\`\`
+6. **Migrations and Seed Data**
+
+   The deployment automatically runs:
+   - Database migrations (`npx prisma migrate deploy`)
+   - Seed data (70+ books, sample users, loan history) - **runs only once if database is empty**
+
+   No manual intervention needed! The app will be pre-populated with demo data on first deployment.
 
 ## 🧪 Development
 

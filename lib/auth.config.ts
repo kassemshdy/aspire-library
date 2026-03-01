@@ -37,28 +37,41 @@ export const authConfig: AuthOptions = {
       // On first JWT callback after sign-in, persist role & id on token
       if (user) {
         token.id = user.id;
+        token.email = user.email;
+      }
 
-        // Check if user should be admin
-        const email = user.email?.toLowerCase();
-        if (email && adminEmails.includes(email)) {
-          // Update user role in database if not already admin
-          const dbUser = await prisma.user.findUnique({
-            where: { email: user.email! },
-          });
+      // Always fetch latest role from database (to handle role switches)
+      if (token.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email as string },
+        });
 
-          if (dbUser && dbUser.role !== "ADMIN") {
-            await prisma.user.update({
-              where: { id: dbUser.id },
-              data: { role: "ADMIN" },
-            });
-            token.role = "ADMIN";
-          } else if (dbUser) {
-            token.role = dbUser.role;
+        if (dbUser) {
+          // On first sign-in, check if this is the first user (auto-elevate to admin)
+          if (user) {
+            const totalUsers = await prisma.user.count();
+            const isFirstUser = totalUsers === 1;
+
+            // Check if user should be admin
+            const email = token.email as string;
+            const isInAdminList = email && adminEmails.includes(email.toLowerCase());
+
+            // Auto-elevate if: in admin list OR is the first user
+            if ((isInAdminList || isFirstUser) && dbUser.role !== "ADMIN") {
+              await prisma.user.update({
+                where: { id: dbUser.id },
+                data: { role: "ADMIN" },
+              });
+              token.role = "ADMIN";
+            } else {
+              token.role = dbUser.role;
+            }
           } else {
-            token.role = "MEMBER";
+            // On subsequent requests, just get the current role
+            token.role = dbUser.role;
           }
         } else {
-          token.role = user.role ?? "MEMBER";
+          token.role = user?.role ?? "MEMBER";
         }
       }
 

@@ -9,9 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PurchaseRecommendations } from "@/components/books/PurchaseRecommendations";
 
 export default async function DashboardPage() {
   const session = await auth();
+  const role = session?.user?.role;
+  const canManageBooks = role === "ADMIN" || role === "LIBRARIAN";
 
   const [totalBooks, availableBooks, checkedOutBooks, totalLoans, recentLoans] =
     await Promise.all([
@@ -101,6 +104,13 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* AI Purchase Recommendations - Only for Librarians and Admins */}
+        {canManageBooks && (
+          <div className="mb-8">
+            <PurchaseRecommendations />
+          </div>
+        )}
 
         {/* Recent Activity */}
         {recentLoans.length > 0 && (
